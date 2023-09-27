@@ -1,3 +1,5 @@
+import pygame
+
 def main():
     print("Hello, World!")
 
