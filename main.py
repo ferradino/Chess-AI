@@ -10,7 +10,7 @@ class Main():
         self.clock = pygame.time.Clock() 
         self.board = Board()
 
-    def mainLoop(self):
+    def gameLoop(self):
         # Draw the board and the pieces on it
         self.board.drawBoard()
         running = True
@@ -34,4 +34,4 @@ class Main():
 
 if __name__ == "__main__":
     main = Main()
-    main.mainLoop()
+    main.gameLoop()
