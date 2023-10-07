@@ -19,4 +19,3 @@ DARK_SQUARE_COLOR = (119, 154, 88) # Dark Green
 
 # Frame Rate
 FPS = 60
-
