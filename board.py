@@ -8,6 +8,9 @@ class Board:
         # Create window and title
         self.window = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Chess")
+
+        # Text Font
+        self.font = pygame.font.Font(pygame.font.get_default_font(), 20)
         
         # Initial setup of the chessboard with pieces in their starting positions.
         # Game board stored as an array of piece objects
@@ -52,12 +55,30 @@ class Board:
             ],
         ]
 
+    def drawRowNums(self):
+        for r in range(ROWS):
+            color = LIGHT_SQAURE_COLOR if (r + 1) % 2 == 0 else DARK_SQUARE_COLOR 
+            text = self.font.render(str(ROWS - r), 1, color)    
+            self.window.blit(text, (110, 110 + r * SQSIZE))
+
+    def drawColumnLetters(self): 
+        for c in range(COLS):
+            color = DARK_SQUARE_COLOR if (c + 1) % 2 == 0 else LIGHT_SQAURE_COLOR 
+            text = self.font.render(chr(c + 97), 1, color)
+            self.window.blit(text, ((100 + SQSIZE - 20) + c * SQSIZE, HEIGHT - 125))
+
+    # Draw the pieces on the board
+    # Loops through the board array, and loads pieces onto the screen
+    def drawPieces(self):
+        for r in range(ROWS):
+            for c in range(COLS):
+                piece = self.board[r][c]
+                if piece:
+                    self.window.blit(piece.img, (r * SQSIZE, c * SQSIZE))
     
     # Drawing board 
     # Loops to get correct square color and then draws square
     def drawBoard(self):
-        font = pygame.font.Font(pygame.font.get_default_font(), 20)
-        
         self.window.fill(GREY)
         for r in range(ROWS):
             for c in range(COLS):
@@ -65,22 +86,13 @@ class Board:
                 color = LIGHT_SQAURE_COLOR if (r + c) % 2 == 0 else DARK_SQUARE_COLOR
                 pygame.draw.rect(self.window, color, (100 + c * SQSIZE, 100 + r * SQSIZE, SQSIZE, SQSIZE))
             
-                # Drawing column letters onto screen
+                # Drawing column letters onto board 
                 if r == ROWS - 1:
-                   cfcolor = DARK_SQUARE_COLOR if (c + 1) % 2 == 0 else LIGHT_SQAURE_COLOR 
-                   ctext = font.render(chr(c + 97), 1, cfcolor)
-                   self.window.blit(ctext, ((100 + SQSIZE - 20) + c * SQSIZE, HEIGHT - 125))
+                    self.drawColumnLetters()
             
-            # Drawing row numbers onto screen
-            rfcolor = LIGHT_SQAURE_COLOR if (r + 1) % 2 == 0 else DARK_SQUARE_COLOR 
-            rtext = font.render(str(ROWS - r), 1, rfcolor)    
-            self.window.blit(rtext, (110, 110 + r * SQSIZE))
-    
-    # Draw the pieces on the board
-    # Loops through the board array, and loads pieces onto the screen
-    def drawPieces(self):
-         for r in range(ROWS):
-            for c in range(COLS):
-                piece = self.board[r][c]
-                if piece:
-                    self.window.blit(piece.image, (r * SQSIZE, c * SQSIZE))
+        # Drawing row numbers onto board 
+        self.drawRowNums()
+   
+
+
+ 
