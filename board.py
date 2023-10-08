@@ -1,5 +1,5 @@
 from const import *
-from pieces import Pawn, Rook, Knight, Bishop, Queen, King
+from pieces import * 
 
 import pygame
 
@@ -55,12 +55,16 @@ class Board:
             ],
         ]
 
-    def drawRowNums(self):
+    # Draws the row numbers on the board
+    # Gets correct color and then draws on board
+    def drawRowNumbers(self):
         for r in range(ROWS):
             color = LIGHT_SQAURE_COLOR if (r + 1) % 2 == 0 else DARK_SQUARE_COLOR 
             text = self.font.render(str(ROWS - r), 1, color)    
             self.window.blit(text, (110, 110 + r * SQSIZE))
 
+    # Draws the column letters on the board
+    # Gets correct color and then draws on board
     def drawColumnLetters(self): 
         for c in range(COLS):
             color = DARK_SQUARE_COLOR if (c + 1) % 2 == 0 else LIGHT_SQAURE_COLOR 
@@ -74,7 +78,7 @@ class Board:
             for c in range(COLS):
                 piece = self.board[r][c]
                 if piece:
-                    self.window.blit(piece.img, (r * SQSIZE, c * SQSIZE))
+                    self.window.blit(piece.img, (100 + c * SQSIZE, 100 + r * SQSIZE))
     
     # Drawing board 
     # Loops to get correct square color and then draws square
@@ -86,12 +90,11 @@ class Board:
                 color = LIGHT_SQAURE_COLOR if (r + c) % 2 == 0 else DARK_SQUARE_COLOR
                 pygame.draw.rect(self.window, color, (100 + c * SQSIZE, 100 + r * SQSIZE, SQSIZE, SQSIZE))
             
-                # Drawing column letters onto board 
                 if r == ROWS - 1:
                     self.drawColumnLetters()
-            
-        # Drawing row numbers onto board 
-        self.drawRowNums()
+        
+        self.drawRowNumbers()
+        self.drawPieces()
    
 
 
