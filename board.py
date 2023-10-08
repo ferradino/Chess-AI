@@ -95,7 +95,3 @@ class Board:
         
         self.drawRowNumbers()
         self.drawPieces()
-   
-
-
- 
