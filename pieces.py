@@ -1,9 +1,13 @@
 from const import *
+import pygame
+import os
+
 
 # Base ChessPiece class that serves as a blueprint for all chess pieces.
 class ChessPiece:
-    def __init__(self, color):
+    def __init__(self, color, img):
         self.color = color  # Color of the piece (white or black).
+        self.img = pygame.transform.scale(pygame.image.load(os.path.join('images', img)), (SQSIZE, SQSIZE))  # Load piece image and scale to size
 
     # Placeholder method for possible moves.
     # Specific piece classes will override this with their movement logic.
@@ -13,6 +17,10 @@ class ChessPiece:
 
 # The Pawn class represents the Pawn chess piece.
 class Pawn(ChessPiece):
+    def __init__(self, color):
+        img = "wp.png" if color == "white" else "bp.png"
+        super().__init__(color, img)
+
     def possible_moves(self, position):
         x, y = position  # Extracting the row and column from the position.
         moves = []  # A list to store all possible moves.
@@ -34,6 +42,10 @@ class Pawn(ChessPiece):
 
 # The Rook class represents the Rook chess piece which moves in straight lines.
 class Rook(ChessPiece):
+    def __init__(self, color):
+        self.img = "wR.png" if color == "white" else "bR.png"
+        super().__init__(color, self.img)
+
     def possible_moves(self, position):
         x, y = position
         moves = []
@@ -48,6 +60,10 @@ class Rook(ChessPiece):
 
 # The Bishop class represents the Bishop chess piece.
 class Bishop(ChessPiece):
+    def __init__(self, color):
+        img = "wB.png" if color == "white" else "bB.png"
+        super().__init__(color, img)
+
     def possible_moves(self, position):
         x, y = position
         moves = []
@@ -70,6 +86,10 @@ class Bishop(ChessPiece):
 
 # The Knight class represents the Knight chess piece.
 class Knight(ChessPiece):
+    def __init__(self, color):
+        img = "wN.png" if color == "white" else "bN.png"
+        super().__init__(color, img)
+
     # Defining all possible moves for a knight.
     MOVES = [(-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1)]
 
@@ -86,11 +106,32 @@ class Knight(ChessPiece):
 
 # The Queen class represents the Queen chess piece.
 class Queen(ChessPiece):
+    def __init__(self, color):
+        img = "wQ.png" if color == "white" else "bQ.png"
+        super().__init__(color, img)
+
     def possible_moves(self, position):
         # The queen can move like both a rook and a bishop.
         return Rook(self.color).possible_moves(position) + Bishop(
             self.color
         ).possible_moves(position)
 
+
+# The King class represents the King chess piece.
 class King(ChessPiece):
-    pass
+    def __init__(self, color):
+        img = "wK.png" if color == "white" else "bK.png"
+        super().__init__(color, img)
+
+    # Defining all possible moves for a king.
+    MOVES = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+    def possible_moves(self, position):
+        x, y = position
+        moves = []
+        # The king can move one square in any direction.
+        for dx, dy in King.MOVES:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < 8 and 0 <= ny < 8:
+                moves.append((nx, ny))
+        return moves
