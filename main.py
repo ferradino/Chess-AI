@@ -8,11 +8,11 @@ class Main():
     def __init__(self):
         pygame.init()
         self.clock = pygame.time.Clock() 
-        self.board = Board()
+        self.gameState = Board()
 
     def gameLoop(self):
         # Draw the board and the pieces on it
-        self.board.drawBoard()
+        self.gameState.drawBoard()
         running = True
 
         # Game Loop (runs until user clocks exit)
