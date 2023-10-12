@@ -25,7 +25,7 @@ class Pawn(ChessPiece):
         x, y = position  # Extracting the row and column from the position.
         moves = []  # A list to store all possible moves.
         # If the pawn is white, it moves upwards (i.e., row increases).
-        if self.color == "white":
+        if self.color == "black":
             if y + 1 < 8:
                 moves.append((x, y + 1))
             # Special move for pawn: It can move 2 steps on its first move.
