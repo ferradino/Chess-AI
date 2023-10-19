@@ -3,13 +3,13 @@
 WIDTH = 1000
 HEIGHT = 1000
 
-BOARD_OFFSET = 200 # Offset for board to be drawn in middle of screen
+BOARD_OFFSET = 100 # Offset for board to be drawn in middle of screen
 
 COLS = 8
 ROWS = 8
 
 # Size of each square
-SQSIZE= (WIDTH - BOARD_OFFSET) // COLS
+SQSIZE= (WIDTH - BOARD_OFFSET * 2) // COLS
 
 # Need to define colors as variables
 BLACK = (0, 0, 0)
