@@ -178,10 +178,10 @@ class King(ChessPiece):
         moves = []
         # The king can move one square in any direction.
         for move in King.MOVES:
-            nx, ny = x + move[0], y + move[1] 
-            if (ny >= 0 and nx <= 7) and (ny >= 0 and ny <= 7):
-                if board[ny][nx] == None or board[ny][nx].color != self.color:
-                    moves.append((nx, ny))
+            kx, ky = x + move[0], y + move[1] 
+            if (ky >= 0 and kx <= 7) and (ky >= 0 and ky <= 7):
+                if board[ky][kx] == None or board[ky][kx].color != self.color:
+                    moves.append((kx, ky))
 
         """
         # Castling logic
