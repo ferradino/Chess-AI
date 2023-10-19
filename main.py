@@ -33,77 +33,46 @@ class Main():
 
                 """ TODO """
                 # Restructure the code below to:
-                # 
-                # Get mouse position
-                # And object at that position
-                #
-                # If not selected and white
-                #   get moves 
-                #   draw moves
-                #   select is true
-                #
-                # If selected and white
-                #   get moves
-                #   draw moves
-                #
-                # If selected and black
-                #   set white piece to new pos
-                #   update old pos to none
-                #   redraw board
-                #   seletect is false
-
-
-                # Get position of mouse click
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    # Get mouse position
+                    pos = ((list(pygame.mouse.get_pos())[0] - BOARD_OFFSET) // SQSIZE,
+                           (list(pygame.mouse.get_pos())[1] - BOARD_OFFSET) // SQSIZE)
+                    # object at that position
+                    game_object = self.board.game_state[pos[1]][pos[0]]
+                    # If not selected and white
                     if selected == False:
-                        start_pos = ((list(pygame.mouse.get_pos())[0] - BOARD_OFFSET) // SQSIZE, # xpos
-                                     (list(pygame.mouse.get_pos())[1] - BOARD_OFFSET) // SQSIZE) # ypos
-                        
-                        # Get object at that position
-                        selected_piece = self.board.game_state[start_pos[1]][start_pos[0]]
-
-                        # If object is white piece
-                        # display its moves on the board
-                        if selected_piece and selected_piece.color == "white":
-                            moves = selected_piece.get_moves(start_pos, self.board.game_state)
-
+                        if game_object and game_object.color == "white":
+                            start_pos = pos
+                            # get moves 
+                            moves = game_object.get_moves((pos), self.board.game_state)
+                            # draw moves
                             self.board.draw_moves(moves)
+                            # select is true
                             selected = True
-
-                    elif selected == True:
-                        # Get position of mouse click
-                        end_pos = ((list(pygame.mouse.get_pos())[0] - BOARD_OFFSET) // SQSIZE, # xpos
-                                   (list(pygame.mouse.get_pos())[1] - BOARD_OFFSET) // SQSIZE) # ypos
-
-                        # Get object at that position
-                        selected_piece = self.board.game_state[end_pos[1]][end_pos[0]]
-
-                        # If object selected is another white piece
-                        # Display its moves on the board
-                        if selected_piece and selected_piece.color == "white":
-                            moves = selected_piece.get_moves(end_pos, self.board.game_state)
-
-                            # Redraw board to show new moves
+                    # If selected and white
+                    if selected == True:
+                        if game_object and game_object.color == "white":
+                            start_pos = pos
+                            # get moves
+                            moves = game_object.get_moves((pos), self.board.game_state)
+                            # redraw board first
                             self.board.draw_board()
+                            # draw moves
                             self.board.draw_moves(moves)
-
-                            # Need to update starting position
-                            start_pos = end_pos
-
-                        # Second click was a valid square
-                        elif end_pos in moves:
-                            # Set white piece equal to that square
+                        
+                        elif pos in moves:    
+                            end_pos = pos
+                            # set white piece to new pos
                             self.board.game_state[end_pos[1]][end_pos[0]] = self.board.game_state[start_pos[1]][start_pos[0]]
-
-                            # Set white piece's old position to none
+                            # update old pos to none
                             self.board.game_state[start_pos[1]][start_pos[0]] = None
-
-                            selected = False 
+                            # redraw board
                             self.board.draw_board()
-                    
+                            # seletect is false
+                            selected = False
+
             # Updates the display to reflect changes
             pygame.display.update()
-
 
 if __name__ == "__main__":
     main = Main()
