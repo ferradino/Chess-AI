@@ -14,7 +14,7 @@ class Board:
         
         # Initial setup of the chessboard with pieces in their starting positions.
         # Game board stored as an array of piece objects
-        self.board = [
+        self.gameState = [
             # Row 8
             [
                 # Columns A-H
@@ -55,13 +55,19 @@ class Board:
             ],
         ]
 
+    # Draw Moves
+    # Draws all the possible moves for a piece
+    def drawMoves(self, moves):
+        for move in moves:
+            pygame.draw.circle(self.window, GREY, ((BOARD_OFFSET + move[0] * SQSIZE) + SQSIZE // 2, (BOARD_OFFSET + move[1] * SQSIZE) + SQSIZE // 2), SQSIZE // 5)
+            
     # Draws the row numbers on the board
     # Gets correct color and then draws on board
     def drawRowNumbers(self):
         for r in range(ROWS):
             color = LIGHT_SQAURE_COLOR if (r + 1) % 2 == 0 else DARK_SQUARE_COLOR 
             text = self.font.render(str(ROWS - r), 1, color)    
-            self.window.blit(text, (110, 110 + r * SQSIZE))
+            self.window.blit(text, (BOARD_OFFSET + 10, BOARD_OFFSET + 10 + r * SQSIZE))
 
     # Draws the column letters on the board
     # Gets correct color and then draws on board
@@ -69,16 +75,16 @@ class Board:
         for c in range(COLS):
             color = DARK_SQUARE_COLOR if (c + 1) % 2 == 0 else LIGHT_SQAURE_COLOR 
             text = self.font.render(chr(c + 97), 1, color)
-            self.window.blit(text, ((100 + SQSIZE - 20) + c * SQSIZE, HEIGHT - 125))
+            self.window.blit(text, ((BOARD_OFFSET + SQSIZE - 20) + c * SQSIZE, HEIGHT - BOARD_OFFSET - 25))
 
     # Draw the pieces on the board
     # Loops through the board array, and loads pieces onto the screen
     def drawPieces(self):
         for r in range(ROWS):
             for c in range(COLS):
-                piece = self.board[r][c]
+                piece = self.gameState[r][c]
                 if piece:
-                    self.window.blit(piece.img, (100 + c * SQSIZE, 100 + r * SQSIZE))
+                    self.window.blit(piece.img, (BOARD_OFFSET + c * SQSIZE, BOARD_OFFSET + r * SQSIZE))
     
     # Drawing board 
     # Loops to get correct square color and then draws square
@@ -88,7 +94,7 @@ class Board:
             for c in range(COLS):
                 # Deciding correct sqaure color
                 color = LIGHT_SQAURE_COLOR if (r + c) % 2 == 0 else DARK_SQUARE_COLOR
-                pygame.draw.rect(self.window, color, (100 + c * SQSIZE, 100 + r * SQSIZE, SQSIZE, SQSIZE))
+                pygame.draw.rect(self.window, color, (BOARD_OFFSET + c * SQSIZE, BOARD_OFFSET + r * SQSIZE, SQSIZE, SQSIZE))
             
                 if r == ROWS - 1:
                     self.drawColumnLetters()
