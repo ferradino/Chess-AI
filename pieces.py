@@ -14,7 +14,6 @@ class ChessPiece:
     def possible_moves(self, position):
         pass
 
-
 # The Pawn class represents the Pawn chess piece.
 class Pawn(ChessPiece):
     def __init__(self, color):
