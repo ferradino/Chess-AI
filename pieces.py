@@ -29,10 +29,14 @@ class Pawn(ChessPiece):
             if y + 1 < 8:
                 if board[y+1][x] == None:
                     moves.append((x, y+1))
-                if x - 1 >= 0 and board[y+1][x-1].color != self.color:
-                    moves.append((x-1, y+1))
-                if x + 1 <= 7 and board[y+1][x+1].color != self.color:
-                    moves.append((x+1, y-1))
+                if x - 1 >= 0: 
+                    if board[y+1][x-1] != None: 
+                        if board[y+1][x+1].color != self.color:
+                            moves.append((x-1, y+1))
+                if x + 1 <= 7: 
+                    if board[y+1][x+1] != None:
+                        if board[y+1][x+1].color != self.color:
+                            moves.append((x+1, y+1))
             # Special move for pawn: It can move 2 steps on its first move.
             if y == 1 and None in { board[y+1][x], board[y+2][x] }:
                 moves.append((x, y+2))
@@ -41,10 +45,14 @@ class Pawn(ChessPiece):
             if y - 1 >= 0:
                 if board[y-1][x] == None:
                     moves.append((x, y-1))
-                if board[y-1][x-1] != None and board[y-1][x-1].color != self.color:
-                    moves.append((x-1, y-1))
-                if board[y-1][x+1] != None and board[y-1][x+1].color != self.color:
-                    moves.append((x+1, y-1))
+                if x - 1 >= 0: 
+                    if board[y-1][x-1] != None:
+                        if board[y-1][x-1].color != self.color:
+                            moves.append((x-1, y-1))
+                if x + 1 <= 7:
+                    if board[y-1][x+1] != None:
+                        if board[y-1][x+1].color != self.color:
+                            moves.append((x+1, y-1))
             if y == 6 and None in { board[y-1][x], board[y-2][x] }:
                 moves.append((x, y - 2))
 
