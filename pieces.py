@@ -15,7 +15,6 @@ class ChessPiece:
     def moves(self, position):
         pass
 
-""" TODO: Implement Pawn Capture """
 # The Pawn class represents the Pawn chess piece.
 class Pawn(ChessPiece):
     def __init__(self, color):
@@ -73,8 +72,6 @@ class Pawn(ChessPiece):
 
         return moves  # Return the list of valid moves.
 
-""" Todo!: can refactor this to be a bit better """
-""" Use MOVES = [(0, 1), (0, -1), (-1, 0), (1, 0)] """
 # The Rook class represents the Rook chess piece which moves in straight lines.
 class Rook(ChessPiece):
     def __init__(self, color):
@@ -103,9 +100,6 @@ class Rook(ChessPiece):
                     break
                 
         return moves
-
-""" Todo!: Can refactor this as well """
-""" Use MOVES = [(-1, -1), (1, -1), (1, 1), (-1, 1)] """
 
 # The Bishop class represents the Bishop chess piece.
 class Bishop(ChessPiece):
@@ -209,5 +203,4 @@ class King(ChessPiece):
                         moves.append((2, y))
 
         """
-
         return moves
