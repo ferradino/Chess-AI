@@ -9,7 +9,7 @@ COLS = 8
 ROWS = 8
 
 # Size of each square
-SQSIZE= (WIDTH - BOARD_OFFSET * 2) // COLS
+SQSIZE = (WIDTH - BOARD_OFFSET * 2) // COLS
 
 # Need to define colors as variables
 BLACK = (0, 0, 0)
