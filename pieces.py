@@ -38,7 +38,7 @@ class Pawn(ChessPiece):
                         if board[y+1][x+1].color != self.color:
                             moves.append((x+1, y+1))
             # Special move for pawn: It can move 2 steps on its first move.
-            if y == 1 and None in { board[y+1][x], board[y+2][x] }:
+            if y == 1 and (board[y+1][x] == board[y+2][x] == None):
                 moves.append((x, y+2))
         # For white pawns, the movement is upward (i.e., row decreases).
         else:
@@ -53,8 +53,8 @@ class Pawn(ChessPiece):
                     if board[y-1][x+1] != None:
                         if board[y-1][x+1].color != self.color:
                             moves.append((x+1, y-1))
-            if y == 6 and None in { board[y-1][x], board[y-2][x] }:
-                moves.append((x, y - 2))
+            if y == 6 and (board[y-1][x] == board[y-2][x] == None):
+                moves.append((x, y-2))
 
             # Pawn Promotion logic
         if self.color == "white" and y == 0:
