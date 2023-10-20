@@ -30,8 +30,6 @@ class Main():
                     pygame.quit()
                     sys.exit()
 
-
-                """ TODO """
                 # Restructure the code below to:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     # Get mouse position
@@ -60,6 +58,7 @@ class Main():
                             # draw moves
                             self.board.draw_moves(moves)
                         
+                        # If selected and black
                         elif pos in moves:    
                             end_pos = pos
                             # set white piece to new pos
