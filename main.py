@@ -47,19 +47,9 @@ class Main():
                             self.board.draw_moves(moves)
                             # select is true
                             selected = True
-                    # If selected and white
                     if selected == True:
-                        if game_object and game_object.color == "white":
-                            start_pos = pos
-                            # get moves
-                            moves = game_object.get_moves((pos), self.board.game_state)
-                            # redraw board first
-                            self.board.draw_board()
-                            # draw moves
-                            self.board.draw_moves(moves)
-                        
                         # If selected and black
-                        elif pos in moves:    
+                        if pos in moves:    
                             end_pos = pos
                             # set white piece to new pos
                             self.board.game_state[end_pos[1]][end_pos[0]] = self.board.game_state[start_pos[1]][start_pos[0]]
@@ -69,6 +59,15 @@ class Main():
                             self.board.draw_board()
                             # seletect is false
                             selected = False
+                        # If selected and white
+                        elif game_object and game_object.color == "white":
+                            start_pos = pos
+                            # get moves
+                            moves = game_object.get_moves((pos), self.board.game_state)
+                            # redraw board first
+                            self.board.draw_board()
+                            # draw moves
+                            self.board.draw_moves(moves)
 
             # Updates the display to reflect changes
             pygame.display.update()

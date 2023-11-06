@@ -10,11 +10,6 @@ class ChessPiece:
             pygame.image.load(os.path.join("images", img)), (SQSIZE, SQSIZE)
         )  # Load piece image and scale to size
 
-    # Placeholder method for possible moves.
-    # Specific piece classes will override this with their movement logic.
-    def moves(self, position):
-        pass
-
 # The Pawn class represents the Pawn chess piece.
 class Pawn(ChessPiece):
     def __init__(self, color):
@@ -25,6 +20,7 @@ class Pawn(ChessPiece):
         x, y = position  # Extracting the row and column from the position.
         moves = []  # A list to store all possible moves.
         # If the pawn is black, it moves downward (i.e., row increases).
+                
         if self.color == "black":
             if y + 1 < 8:
                 if board[y+1][x] == None:
@@ -191,24 +187,15 @@ class King(ChessPiece):
                 if board[ky][kx] == None or board[ky][kx].color != self.color:
                     moves.append((kx, ky))
 
-        """
         # Castling logic
-        if not self.has_moved and not board.is_in_check(self.color):
+        if not self.has_moved:
             # Check for king-side castling (O-O)
             if isinstance(board[y][7], Rook) and not board[y][7].has_moved:
                 if not board[y][5] and not board[y][6]:
-                    if not board.is_square_under_attack(
-                        5, y, self.color
-                    ) and not board.is_square_under_attack(6, y, self.color):
-                        moves.append((6, y))
+                    moves.append((7, y))
 
             # Check for queen-side castling (O-O-O)
-            if isinstance(board[y][0], Rook) and not board[y][0].has_moved:
+            if isinstance(board[y][0], Rook):
                 if not board[y][1] and not board[y][2] and not board[y][3]:
-                    if not board.is_square_under_attack(
-                        3, y, self.color
-                    ) and not board.is_square_under_attack(2, y, self.color):
-                        moves.append((2, y))
-
-        """
+                    moves.append((0, y))
         return moves
