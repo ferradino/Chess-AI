@@ -3,7 +3,7 @@ import pygame
 pygame.init()
 
 import engine
-from board import * 
+from display import * 
 from pieces import *
 from const import FPS, SQSIZE, BOARD_OFFSET
 
