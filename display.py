@@ -42,7 +42,7 @@ def draw_pieces(board):
 
 # Drawing board 
 # Loops to get correct square color and then draws square
-def draw_board(game_state):
+def draw_board(board):
     window.fill(GREY)
     for r in range(ROWS):
         for c in range(COLS):
@@ -54,5 +54,5 @@ def draw_board(game_state):
                 draw_column_letters()
 
     draw_row_numbers()
-    draw_pieces(game_state)
+    draw_pieces(board)
 
