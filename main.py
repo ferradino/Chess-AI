@@ -1,74 +1,98 @@
 import sys
 import pygame
+pygame.init()
 
-from board import Board
+import engine
+from board import * 
 from pieces import *
 from const import FPS, SQSIZE, BOARD_OFFSET
 
 class Main():
     def __init__(self):
-        pygame.init()
+        self.running = True
         self.clock = pygame.time.Clock() 
-        self.board = Board()
+        self.game_state = engine.GameState()
 
+        self.selected_square = ()
+        self.clicked_squares = []
+        self.move_made = False
+
+        
     def game_loop(self):
         # Draw the board and the pieces on it
-        self.board.draw_board()
-        running = True
-        selected = False
+        draw_board(self.game_state.board)
 
         # Game Loop (runs until user clocks exit)
-        while running:
+        while self.running:
             # Limits how fast the game loops (60fps)
             self.clock.tick(FPS)
         
             # Event handling
             for event in pygame.event.get():
-                # If user clicks exit, exit program
+                # If user clicked_square exit, exit program
                 if event.type == pygame.QUIT:
-                    running = False
+                    self.running = False
                     pygame.quit()
                     sys.exit()
 
-                # Restructure the code below to:
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    # Get mouse position
-                    pos = ((list(pygame.mouse.get_pos())[0] - BOARD_OFFSET) // SQSIZE,
-                           (list(pygame.mouse.get_pos())[1] - BOARD_OFFSET) // SQSIZE)
-                    # object at that position
-                    game_object = self.board.game_state[pos[1]][pos[0]]
-                    # If not selected and white
-                    if selected == False:
-                        if game_object and game_object.color == "white":
-                            start_pos = pos
-                            # get moves 
-                            moves = game_object.get_moves((pos), self.board.game_state)
-                            # draw moves
-                            self.board.draw_moves(moves)
-                            # select is true
-                            selected = True
-                    # If selected and white
-                    if selected == True:
-                        if game_object and game_object.color == "white":
-                            start_pos = pos
-                            # get moves
-                            moves = game_object.get_moves((pos), self.board.game_state)
-                            # redraw board first
-                            self.board.draw_board()
-                            # draw moves
-                            self.board.draw_moves(moves)
-                        
-                        # If selected and black
-                        elif pos in moves:    
-                            end_pos = pos
-                            # set white piece to new pos
-                            self.board.game_state[end_pos[1]][end_pos[0]] = self.board.game_state[start_pos[1]][start_pos[0]]
-                            # update old pos to none
-                            self.board.game_state[start_pos[1]][start_pos[0]] = None
-                            # redraw board
-                            self.board.draw_board()
-                            # seletect is false
-                            selected = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    position = ((list(pygame.mouse.get_pos())[0] - BOARD_OFFSET) // SQSIZE,  # (x, y) location of the mouse
+                                (list(pygame.mouse.get_pos())[1] - BOARD_OFFSET) // SQSIZE)
+                    col = position[0] 
+                    row = position[1]
+
+                    # Clicked the same square twice
+                    if self.selected_square == (row, col) and len(self.clicked_squares) == 1:
+                        self.square_selected = ()
+                        self.clicked_squares = []
+
+                    else:
+                        # If not the same square, add it to the list
+                        self.selected_square = (row, col)
+                        self.clicked_squares.append(self.selected_square)
+
+
+                    # Make sure first click is a white piece
+                    game_object = self.game_state.board[row][col]
+                    if len(self.clicked_squares) == 1:
+                        # Clicked on a non white piece 
+                        if not game_object or game_object.color == "black":
+                            self.selected_square = ()
+                            self.clicked_squares = []
+
+                            draw_board(self.game_state.board)
+                        # Clicked on a white piece 
+                        else:
+                            moves = game_object.get_moves((position), self.game_state.board)
+
+                            draw_board(self.game_state.board)
+                            draw_moves(moves)
+
+                    elif len(self.clicked_squares) == 2:
+                        # Make sure second square is a possible move 
+                        if position in moves:
+                            move = engine.Move(self.clicked_squares[0], self.clicked_squares[1], self.game_state.board)
+                            self.game_state.make_move(move)
+
+                            draw_board(self.game_state.board)
+                            
+                            self.move_made = True
+                            self.square_selected = () # deselect square
+                            self.clicked_squares = [] # reset list
+
+                        # Clicked on another white piece, have to reset and redraw moves
+                        elif game_object and game_object.color == "white":
+                            moves = game_object.get_moves((position), self.game_state.board)
+
+                            draw_board(self.game_state.board)
+                            draw_moves(moves)
+
+                            self.clicked_squares = [self.selected_square] # setting list equal to current square selected
+
+                        # Did not click on a possible move square or another white piece
+                        else:
+                            self.clicked_squares = [self.clicked_squares[0]] # setting list equal to first square in list
+                            
 
             # Updates the display to reflect changes
             pygame.display.update()
