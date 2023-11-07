@@ -33,10 +33,10 @@ def draw_column_letters():
 
 # Draw the pieces on the board
 # Loops through the board array, and loads pieces onto the screen
-def draw_pieces(game_state):
+def draw_pieces(board):
     for r in range(ROWS):
         for c in range(COLS):
-            piece = game_state[r][c]
+            piece = board[r][c]
             if piece:
                 window.blit(piece.img, (BOARD_OFFSET + c * SQSIZE, BOARD_OFFSET + r * SQSIZE))
 
