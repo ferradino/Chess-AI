@@ -10,11 +10,6 @@ class ChessPiece:
             pygame.image.load(os.path.join("images", img)), (SQSIZE, SQSIZE)
         )  # Load piece image and scale to size
 
-    # Placeholder method for possible moves.
-    # Specific piece classes will override this with their movement logic.
-    def moves(self, position):
-        pass
-
 # The Pawn class represents the Pawn chess piece.
 class Pawn(ChessPiece):
     def __init__(self, color):
@@ -56,28 +51,6 @@ class Pawn(ChessPiece):
             if y == 6 and (board[y-1][x] == board[y-2][x] == None):
                 moves.append((x, y-2))
 
-            # Pawn Promotion logic
-        if self.color == "white" and y == 0:
-            board.promote_pawn(x, y)
-        elif self.color == "black" and y == 7:
-            board.promote_pawn(x, y)
-
-            # En Passant
-        """
-        if board.last_move:
-            last_piece_moved, last_start, last_end = board.last_move
-            if (
-                isinstance(last_piece_moved, Pawn)
-                and abs(last_start[1] - last_end[1]) == 2
-            ):
-                if self.color == "white" and y == 3:
-                    if x - 1 == last_end[0] or x + 1 == last_end[0]:
-                        moves.append((last_end[0], last_end[1] - 1))
-                elif self.color == "black" and y == 4:
-                    if x - 1 == last_end[0] or x + 1 == last_end[0]:
-                        moves.append((last_end[0], last_end[1] + 1))
-        """
-
         return moves  # Return the list of valid moves.
 
 # The Rook class represents the Rook chess piece which moves in straight lines.
@@ -87,13 +60,13 @@ class Rook(ChessPiece):
         self.has_moved = False
         super().__init__(color, self.img)
 
-    MOVES = [(0, 1), (0, -1), (-1, 0), (1, 0)]
+    DIRS = [(0, 1), (0, -1), (-1, 0), (1, 0)]
 
     def get_moves(self, position, board):
         x, y = position
         moves = []
 
-        for move in Rook.MOVES:
+        for move in Rook.DIRS:
             for i in range(1, 8):
                 rx, ry = x + (i * move[0]), y + (i * move[1])
                 if (rx >= 0 and rx <= 7) and (ry >= 0 and ry <= 7):
@@ -115,13 +88,13 @@ class Bishop(ChessPiece):
         img = "wB.png" if color == "white" else "bB.png"
         super().__init__(color, img)
 
-    MOVES = [(-1, -1), (1, -1), (1, 1), (-1, 1)]
+    DIRS = [(-1, -1), (1, -1), (1, 1), (-1, 1)]
 
     def get_moves(self, position, board):
         x, y = position
         moves = []
 
-        for move in Bishop.MOVES:
+        for move in Bishop.DIRS:
             for i in range(1, 8):
                 bx, by = x + (i * move[0]), y + (i * move[1])
                 if (bx >= 0 and bx <= 7) and (by >= 0 and by <= 7):
@@ -144,13 +117,13 @@ class Knight(ChessPiece):
         super().__init__(color, img)
 
     # Defining all possible moves for a knight.
-    MOVES = [(-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1)]
+    DIRS = [(-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1)]
 
     def get_moves(self, position, board):
         x, y = position
         moves = []
-        # The knight can jump to any of the positions defined in MOVES.
-        for move in Knight.MOVES:
+        # The knight can jump to any of the positions defined in DIRS.
+        for move in Knight.DIRS:
             nx, ny = x + move[0], y + move[1]
             if (nx >= 0 and nx <= 7) and (ny >= 0 and ny <= 7):
                 if board[ny][nx] == None or board[ny][nx].color != self.color:
@@ -179,36 +152,16 @@ class King(ChessPiece):
         super().__init__(color, img)
 
     # Defining all possible moves for a king.
-    MOVES = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    DIRS = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
     def get_moves(self, position, board):
         x, y = position
         moves = []
         # The king can move one square in any direction.
-        for move in King.MOVES:
+        for move in King.DIRS:
             kx, ky = x + move[0], y + move[1] 
             if (ky >= 0 and kx <= 7) and (ky >= 0 and ky <= 7):
                 if board[ky][kx] == None or board[ky][kx].color != self.color:
                     moves.append((kx, ky))
 
-        """
-        # Castling logic
-        if not self.has_moved and not board.is_in_check(self.color):
-            # Check for king-side castling (O-O)
-            if isinstance(board[y][7], Rook) and not board[y][7].has_moved:
-                if not board[y][5] and not board[y][6]:
-                    if not board.is_square_under_attack(
-                        5, y, self.color
-                    ) and not board.is_square_under_attack(6, y, self.color):
-                        moves.append((6, y))
-
-            # Check for queen-side castling (O-O-O)
-            if isinstance(board[y][0], Rook) and not board[y][0].has_moved:
-                if not board[y][1] and not board[y][2] and not board[y][3]:
-                    if not board.is_square_under_attack(
-                        3, y, self.color
-                    ) and not board.is_square_under_attack(2, y, self.color):
-                        moves.append((2, y))
-
-        """
         return moves
