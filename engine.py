@@ -48,7 +48,6 @@ class GameState:
         self.checkmate = False
         self.stalemate = False
         self.in_check = False
-        self.checks = []
 
     def make_move(self, move):
         self.board[move.start_row][move.start_col] = None
