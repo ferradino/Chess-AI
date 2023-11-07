@@ -31,7 +31,7 @@ class Main():
                     sys.exit()
 
                 # Restructure the code below to:
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                elif event.type == pygame.MOUSEBUTTONDOWN:
                     # Get mouse position
                     pos = ((list(pygame.mouse.get_pos())[0] - BOARD_OFFSET) // SQSIZE,
                            (list(pygame.mouse.get_pos())[1] - BOARD_OFFSET) // SQSIZE)
