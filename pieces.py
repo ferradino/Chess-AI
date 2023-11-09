@@ -52,28 +52,6 @@ class Pawn(ChessPiece):
             if y == 6 and (board[y-1][x] == board[y-2][x] == None):
                 moves.append((x, y-2))
 
-            # Pawn Promotion logic
-        if self.color == "white" and y == 0:
-            board.promote_pawn(x, y)
-        elif self.color == "black" and y == 7:
-            board.promote_pawn(x, y)
-
-            # En Passant
-        """
-        if board.last_move:
-            last_piece_moved, last_start, last_end = board.last_move
-            if (
-                isinstance(last_piece_moved, Pawn)
-                and abs(last_start[1] - last_end[1]) == 2
-            ):
-                if self.color == "white" and y == 3:
-                    if x - 1 == last_end[0] or x + 1 == last_end[0]:
-                        moves.append((last_end[0], last_end[1] - 1))
-                elif self.color == "black" and y == 4:
-                    if x - 1 == last_end[0] or x + 1 == last_end[0]:
-                        moves.append((last_end[0], last_end[1] + 1))
-        """
-
         return moves  # Return the list of valid moves.
 
 # The Rook class represents the Rook chess piece which moves in straight lines.
@@ -187,15 +165,4 @@ class King(ChessPiece):
                 if board[ky][kx] == None or board[ky][kx].color != self.color:
                     moves.append((kx, ky))
 
-        # Castling logic
-        if not self.has_moved:
-            # Check for king-side castling (O-O)
-            if isinstance(board[y][7], Rook) and not board[y][7].has_moved:
-                if not board[y][5] and not board[y][6]:
-                    moves.append((7, y))
-
-            # Check for queen-side castling (O-O-O)
-            if isinstance(board[y][0], Rook):
-                if not board[y][1] and not board[y][2] and not board[y][3]:
-                    moves.append((0, y))
         return moves
