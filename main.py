@@ -16,6 +16,7 @@ class Main():
         self.selected_square = ()
         self.clicked_squares = []
         self.move_made = False
+        self.color_to_move = "white"
 
         
     def game_loop(self):
@@ -41,6 +42,10 @@ class Main():
                     col = position[0] 
                     row = position[1]
 
+                    # Check if click was out of bounds
+                    if (row < 0 or row > 7) or (col < 0 or col > 7):
+                        continue
+
                     # Clicked the same square twice
                     if self.selected_square == (row, col) and len(self.clicked_squares) == 1:
                         self.square_selected = ()
@@ -56,7 +61,7 @@ class Main():
                     game_object = self.game_state.board[row][col]
                     if len(self.clicked_squares) == 1:
                         # Clicked on a non white piece 
-                        if not game_object or game_object.color == "black":
+                        if not game_object or game_object.color != self.color_to_move:
                             self.selected_square = ()
                             self.clicked_squares = []
 
@@ -81,7 +86,7 @@ class Main():
                             self.clicked_squares = [] # reset list
 
                         # Clicked on another white piece, have to reset and redraw moves
-                        elif game_object and game_object.color == "white":
+                        elif game_object and game_object.color == self.color_to_move:
                             moves = game_object.get_moves((position), self.game_state.board)
 
                             draw_board(self.game_state.board)
@@ -92,6 +97,12 @@ class Main():
                         # Did not click on a possible move square or another white piece
                         else:
                             self.clicked_squares = [self.clicked_squares[0]] # setting list equal to first square in list
+
+                        if self.move_made == True:
+                            if self.color_to_move == "white":
+                                self.color_to_move = "black"
+                            else:
+                                self.color_to_move = "white"
                             
 
             # Updates the display to reflect changes

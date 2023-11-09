@@ -20,13 +20,14 @@ class Pawn(ChessPiece):
         x, y = position  # Extracting the row and column from the position.
         moves = []  # A list to store all possible moves.
         # If the pawn is black, it moves downward (i.e., row increases).
+                
         if self.color == "black":
             if y + 1 < 8:
                 if board[y+1][x] == None:
                     moves.append((x, y+1))
                 if x - 1 >= 0: 
                     if board[y+1][x-1] != None: 
-                        if board[y+1][x+1].color != self.color:
+                        if board[y+1][x-1].color != self.color:
                             moves.append((x-1, y+1))
                 if x + 1 <= 7: 
                     if board[y+1][x+1] != None:
