@@ -62,6 +62,27 @@ class GameState:
         elif move.piece_moved == King and move.piece_moved.color == "black":
             self.black_king_location = (move.end_row, move.end_col)
 
+        # Check if Pawn Promotion
+        if move.pawn_promotion:
+            while True:
+                promoted_piece = input("Promote to q, r, b, or k: ")
+                if promoted_piece == "q":
+                    promoted_piece = Queen(move.piece_moved.color)
+                    break
+                elif promoted_piece == "r":
+                    promoted_piece = Rook(move.piece_moved.color)
+                    break
+                elif promoted_piece == "b":
+                    promoted_piece = Bishop(move.piece_moved.color)
+                    break
+                elif promoted_piece == "k":
+                    promoted_piece = Knight(move.piece_moved.color)
+                    break
+                else:
+                    print("Not a valid piece, please reselect!")
+
+            self.board[move.end_row][move.end_col] = promoted_piece
+
 class Move:
     def __init__(self, start_square, end_sqaure, board):
         self.start_row = start_square[0]
@@ -73,3 +94,5 @@ class Move:
         self.piece_moved = board[self.start_row][self.start_col]
         self.piece_captured = board[self.end_row][self.end_col]
         self.is_capture = self.piece_captured != None
+
+        self.pawn_promotion = type(self.piece_moved) == Pawn and self.end_row in (0,7)
