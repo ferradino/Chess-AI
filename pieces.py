@@ -27,7 +27,7 @@ class Pawn(ChessPiece):
                     moves.append((x, y+1))
                 if x - 1 >= 0: 
                     if board[y+1][x-1] != None: 
-                        if board[y+1][x+1].color != self.color:
+                        if board[y+1][x-1].color != self.color:
                             moves.append((x-1, y+1))
                 if x + 1 <= 7: 
                     if board[y+1][x+1] != None:
