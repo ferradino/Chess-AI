@@ -165,7 +165,6 @@ class King(ChessPiece):
                 if board[y][0].has_moved == False:
                     # Check if all slots are empty
                     if board[y][1] == board[y][2] == board[y][3] == None:
-                        print("I am here")
                         # Add to move list
                         moves.append((0, y))
 
