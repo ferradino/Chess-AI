@@ -17,9 +17,9 @@ class Pawn(ChessPiece):
         super().__init__(color, img)
 
     def get_moves(self, position, board):
-        x, y = position  # Extracting the y and column from the position.
+        x, y = position  # Extracting the row and column from the position.
         moves = []  # A list to store all possible moves.
-        # If the pawn is black, it moves downward (i.e., y increases).
+        # If the pawn is black, it moves downward (i.e., row increases).
                 
         if self.color == "black":
             if y + 1 < 8:
@@ -36,7 +36,7 @@ class Pawn(ChessPiece):
             # Special move for pawn: It can move 2 steps on its first move.
             if y == 1 and (board[y+1][x] == board[y+2][x] == None):
                 moves.append((x, y+2))
-        # For white pawns, the movement is upward (i.e., y decreases).
+        # For white pawns, the movement is upward (i.e., row decreases).
         else:
             if y - 1 >= 0:
                 if board[y-1][x] == None:
@@ -190,7 +190,7 @@ class King(ChessPiece):
                     moves.append((kx, ky))
 
         self.check_for_castle(position, board, moves)
-        print(moves)
+
         return moves
 
 
