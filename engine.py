@@ -56,13 +56,17 @@ class GameState:
         self.move_log.append(move)  # log the move 
         self.white_to_move = not self.white_to_move  # switch players
 
-        # update king's location if moved
+        # Update king's location if moved
         if type(move.piece_moved) == King and move.piece_moved.color == "white":
             self.white_king_location = (move.end_row, move.end_col)
             self.board[move.end_row][move.end_col].has_moved = True     # Set has_moved attribute to true
         elif type(move.piece_moved) == King and move.piece_moved.color == "black":
             self.black_king_location = (move.end_row, move.end_col)
             self.board[move.end_row][move.end_col].has_moved = True     # Set has_moved attribute to true
+
+        # Check if piece moved was a Rook (Is not able to castle after it moves)
+        if type(move.piece_moved) == Rook:
+            self.board[move.end_row][move.end_col].has_moved = True
 
         # Check if Pawn Promotion
         if move.pawn_promotion:
