@@ -53,14 +53,16 @@ class GameState:
         self.board[move.start_row][move.start_col] = None
         self.board[move.end_row][move.end_col] = move.piece_moved
 
-        self.move_log.append(move)  # log the move so we can undo it later
+        self.move_log.append(move)  # log the move 
         self.white_to_move = not self.white_to_move  # switch players
 
         # update king's location if moved
-        if move.piece_moved == King and move.piece_moved.color == "white":
+        if type(move.piece_moved) == King and move.piece_moved.color == "white":
             self.white_king_location = (move.end_row, move.end_col)
-        elif move.piece_moved == King and move.piece_moved.color == "black":
+            self.board[move.end_row][move.end_col].has_moved = True     # Set has_moved attribute to true
+        elif type(move.piece_moved) == King and move.piece_moved.color == "black":
             self.black_king_location = (move.end_row, move.end_col)
+            self.board[move.end_row][move.end_col].has_moved = True     # Set has_moved attribute to true
 
         # Check if Pawn Promotion
         if move.pawn_promotion:
@@ -83,6 +85,29 @@ class GameState:
 
             self.board[move.end_row][move.end_col] = promoted_piece
 
+        # Check if En Passant
+        if move.is_enpassant:
+            pass
+
+        # Check if castle
+        if move.is_castle:
+            # Check which side the castle is
+            if abs(move.start_col - move.end_col) == 3:
+                # King side castle
+                self.board[move.end_row][6] = move.piece_moved
+                self.board[move.end_row][5] = move.piece_captured
+            elif abs(move.start_col - move.end_col) == 4:
+                # Queen side castle
+                self.board[move.end_row][2] = move.piece_moved
+                self.board[move.end_row][3] = move.piece_captured
+            else:
+                print("Error: Shouldn't have been a castling move")
+
+            # Reset the old rook position to None
+            self.board[move.end_row][move.end_col] = None
+
+
+
 class Move:
     def __init__(self, start_square, end_sqaure, board):
         self.start_row = start_square[0]
@@ -96,3 +121,6 @@ class Move:
         self.is_capture = self.piece_captured != None
 
         self.pawn_promotion = type(self.piece_moved) == Pawn and self.end_row in (0,7)
+        self.is_enpassant = False
+
+        self.is_castle = type(self.piece_moved) == King and (type(self.piece_captured) == Rook and self.piece_captured.color == self.piece_moved.color)
