@@ -1,7 +1,6 @@
 from const import *
 import pygame
 
-
 # Create window and title
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess")
@@ -55,4 +54,3 @@ def draw_board(board):
 
     draw_row_numbers()
     draw_pieces(board)
-
