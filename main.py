@@ -100,7 +100,6 @@ class Main():
                         else:
                             self.clicked_squares = [self.clicked_squares[0]] # setting list equal to first square in list
                             
-
             # Updates the display to reflect changes
             pygame.display.update()
 

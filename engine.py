@@ -1,4 +1,10 @@
+import numpy as np
 from pieces import *
+
+# from tensorflow.keras import models
+
+# Our model we trained from the ai
+# model = models.load_model("filename")
 
 class GameState:
     def __init__(self):
@@ -70,22 +76,27 @@ class GameState:
 
         # Check if Pawn Promotion
         if move.pawn_promotion:
-            while True:
-                promoted_piece = input("Promote to q, r, b, or k: ")
-                if promoted_piece == "q":
-                    promoted_piece = Queen(move.piece_moved.color)
-                    break
-                elif promoted_piece == "r":
-                    promoted_piece = Rook(move.piece_moved.color)
-                    break
-                elif promoted_piece == "b":
-                    promoted_piece = Bishop(move.piece_moved.color)
-                    break
-                elif promoted_piece == "k":
-                    promoted_piece = Knight(move.piece_moved.color)
-                    break
-                else:
-                    print("Not a valid piece, please reselect!")
+            if self.white_to_move:
+                while True:
+                    promoted_piece = input("Promote to q, r, b, or k: ")
+                    if promoted_piece == "q":
+                        promoted_piece = Queen(move.piece_moved.color)
+                        break
+                    elif promoted_piece == "r":
+                        promoted_piece = Rook(move.piece_moved.color)
+                        break
+                    elif promoted_piece == "b":
+                        promoted_piece = Bishop(move.piece_moved.color)
+                        break
+                    elif promoted_piece == "k":
+                        promoted_piece = Knight(move.piece_moved.color)
+                        break
+                    else:
+                        print("Not a valid piece, please reselect!")
+            else:
+                # All black promotions will just be a Queen
+                # As of now at least
+                promoted_piece = Queen(move.piece_moved.color)
 
             self.board[move.end_row][move.end_col] = promoted_piece
 
@@ -110,7 +121,127 @@ class GameState:
             # Reset the old rook position to None
             self.board[move.end_row][move.end_col] = None
 
+    # Get all the possible moves for a certain color pieces
+    def get_all_possible_moves(self, color):
+        legal_moves = []
+        moves = []
 
+        # Loop through each row and column looking for a piece
+        for y, row in enumerate(self.board):
+            for x, piece in enumerate(row):
+                if isinstance(ChessPiece) and piece.color == color:
+                    # Get all possible moves that piece found
+                    moves = piece.get_moves(self.board)
+                    for move in moves:
+                        legal_moves.append(Move((y,x), move, self.board))
+
+        return legal_moves
+    
+    # Undo the last move made
+    def undo_move(self):
+        # get the last move made
+        move = self.move_log[len(self.move_log)-1]
+        
+        # reset the pieces on their respective sqaures
+        self.board[move.start_row][move.start_col] = move.piece_moved
+        self.board[move.end_row][move.end_col] = move.piece_captured
+
+        # check if last move was checkmate
+        self.checkmate = False if self.checkmate else self.checkmate 
+
+        # reset color to move
+        self.white_to_move = not self.white_to_move
+
+        # pop move log
+        self.move_log.pop()
+
+
+
+    # Write a Min/Max evaluation to turn model into an array we can work with
+    def get_board_eval(self):
+        """
+        # Turn our board into a board the model can understand
+        board3d = split_dims(self.board)
+        board3d = np.expand_dims(board3d, 0)
+
+        # Return the evaluation from the model
+        return model(board3d)[0][0]
+        """
+        pass
+    
+    # Write a Min/Max fuction
+    def minimax(self, depth, a, b, max):
+        # Hit final depth or game is over
+        if depth == 0 or self.checkmate:
+            return self.get_board_eval(self.board)
+
+        # If turn is black 
+        if max:
+            max_eval = -np.inf
+            for move in self.get_all_possible_moves("black"):
+                # Make move
+                self.make_move(move)
+
+                # Evaluate the move
+                eval = self.minimax(depth-1, a, b, False)
+
+                # Undo move
+                self.undo_move()
+
+                # Get max eval
+                max_eval = max(max_eval, eval)
+                a = max(a, eval)
+                if b <= a:
+                    break
+            
+            # Return max eval (or best move for black) 
+            return max_eval
+
+        # If turn is white
+        else:
+            min_eval = np.inf
+            for move in self.get_all_possible_moves("white"):
+                # Make move
+                self.make_move(move)
+
+                # Evaluate the move
+                eval = self.minimax(depth-1, a, b, True)
+
+                # Undo move
+                self.undo_move()
+
+                # Get min eval (or best move for white)
+                min_eval = min(min_eval, eval)
+                b = min(b, eval)
+                if b <= a:
+                    break
+            
+            # Return min eval (or best move for white)
+            return min_eval
+
+    # Write function to get AI move
+    def ai_move(self, depth):
+        best_move = None
+        max_eval = -np.inf
+
+        # Loop through, evaluating each move
+        for move in self.get_all_possible_moves("black"):
+            # Make move
+            self.make_move(move)
+            
+            # Evaluate the move
+            eval = self.minimax(depth-1, -np.inf, np.inf, False)
+
+            # Undo move
+            self.undo_move()
+            
+            # Get max evaluation
+            if eval > max_eval:
+                max_eval = eval
+                best_move = move
+            
+        # return best move
+        return best_move 
 
 class Move:
     def __init__(self, start_square, end_sqaure, board):

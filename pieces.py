@@ -191,5 +191,3 @@ class King(ChessPiece):
         self.check_for_castle(position, board, moves)
 
         return moves
-
-
