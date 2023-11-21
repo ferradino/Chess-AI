@@ -1,10 +1,12 @@
+import os
 import numpy as np
 from pieces import *
 
+# import tensorflow
 # from tensorflow.keras import models
 
 # Our model we trained from the ai
-# model = models.load_model("filename")
+# model = models.load_model('model.h5')
 
 class GameState:
     def __init__(self):
@@ -88,7 +90,7 @@ class GameState:
                     elif promoted_piece == "b":
                         promoted_piece = Bishop(move.piece_moved.color)
                         break
-                    elif promoted_piece == "k":
+                    elif promoted_piece == "n":
                         promoted_piece = Knight(move.piece_moved.color)
                         break
                     else:
@@ -121,6 +123,50 @@ class GameState:
             # Reset the old rook position to None
             self.board[move.end_row][move.end_col] = None
 
+    # Undo the last move made
+    # Resets all changes to gamestate from previous move
+    def undo_move(self):
+        # get the last move made
+        move = self.move_log[len(self.move_log)-1]
+        
+        self.board[move.start_row][move.start_col] = move.piece_moved
+        self.board[move.end_row][move.end_col] = move.piece_captured
+
+        if type(move.piece_moved) == King and move.piece_moved.color == "white":
+            self.white_king_location = (move.start_row, move.start_col)
+            self.board[move.start_row][move.start_col].has_moved = False     # Set has_moved attribute to false 
+        elif type(move.piece_moved) == King and move.piece_moved.color == "black":
+            self.black_king_location = (move.start_row, move.start_col)
+            self.board[move.start_row][move.start_col].has_moved = False     # Set has_moved attribute to false 
+
+        if type(move.piece_moved) == Rook:
+            self.board[move.start_row][move.start_col].has_moved = False
+
+        # Check if castle
+        if move.is_castle:
+            # Check which side the castle is
+            if abs(move.start_col - move.end_col) == 3:
+                # King side castle
+                self.board[move.end_row][6] = None
+                self.board[move.end_row][5] = None 
+                self.board[move.start_row][move.start_col] = King(move.piece_moved.color)
+                self.board[move.end_row][move.end_col] = Rook(move.piece_moved.color)
+            elif abs(move.start_col - move.end_col) == 4:
+                # Queen side castle
+                self.board[move.end_row][2] = None 
+                self.board[move.end_row][3] = None 
+                self.board[move.start_row][move.start_col] = King(move.piece_moved.color)
+                self.board[move.end_row][move.end_col] = Rook(move.piece_moved.color)
+
+        # check if last move was checkmate
+        self.checkmate = False if self.checkmate else self.checkmate 
+        self.stalemate = False if self.stalemate else self.stalemate
+
+        self.white_to_move = not self.white_to_move
+
+        # pop move log
+        self.move_log.pop()
+
     # Get all the possible moves for a certain color pieces
     def get_all_possible_moves(self, color):
         legal_moves = []
@@ -129,39 +175,19 @@ class GameState:
         # Loop through each row and column looking for a piece
         for y, row in enumerate(self.board):
             for x, piece in enumerate(row):
-                if isinstance(ChessPiece) and piece.color == color:
+                if isinstance(self.board[y][x], ChessPiece) and piece.color == color:
                     # Get all possible moves that piece found
-                    moves = piece.get_moves(self.board)
+                    moves = piece.get_moves((x,y), self.board)
                     for move in moves:
                         legal_moves.append(Move((y,x), move, self.board))
 
         return legal_moves
-    
-    # Undo the last move made
-    def undo_move(self):
-        # get the last move made
-        move = self.move_log[len(self.move_log)-1]
-        
-        # reset the pieces on their respective sqaures
-        self.board[move.start_row][move.start_col] = move.piece_moved
-        self.board[move.end_row][move.end_col] = move.piece_captured
-
-        # check if last move was checkmate
-        self.checkmate = False if self.checkmate else self.checkmate 
-
-        # reset color to move
-        self.white_to_move = not self.white_to_move
-
-        # pop move log
-        self.move_log.pop()
-
-
 
     # Write a Min/Max evaluation to turn model into an array we can work with
     def get_board_eval(self):
         """
         # Turn our board into a board the model can understand
-        board3d = split_dims(self.board)
+        # board3d = self.board)
         board3d = np.expand_dims(board3d, 0)
 
         # Return the evaluation from the model
@@ -172,8 +198,8 @@ class GameState:
     # Write a Min/Max fuction
     def minimax(self, depth, a, b, max):
         # Hit final depth or game is over
-        if depth == 0 or self.checkmate:
-            return self.get_board_eval(self.board)
+        if depth == 0 or self.checkmate or self.stalemate:
+            return self.get_board_eval()
 
         # If turn is black 
         if max:
@@ -220,7 +246,7 @@ class GameState:
             return min_eval
 
     # Write function to get AI move
-    def ai_move(self, depth):
+    def ai_move(self, depth = 10):
         best_move = None
         max_eval = -np.inf
 
