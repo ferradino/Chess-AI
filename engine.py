@@ -1,12 +1,14 @@
-import os
 import numpy as np
 from pieces import *
+from const import ROWS, COLS
 
-# import tensorflow
-# from tensorflow.keras import models
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+import tensorflow as tf
 
 # Our model we trained from the ai
-# model = models.load_model('model.h5')
+model = tf.keras.models.load_model('models/model2023-11-30 22:19:14.553059.keras')
 
 class GameState:
     def __init__(self):
@@ -77,29 +79,11 @@ class GameState:
             self.board[move.end_row][move.end_col].has_moved = True
 
         # Check if Pawn Promotion
-        if move.pawn_promotion:
-            if self.white_to_move:
-                while True:
-                    promoted_piece = input("Promote to q, r, b, or k: ")
-                    if promoted_piece == "q":
-                        promoted_piece = Queen(move.piece_moved.color)
-                        break
-                    elif promoted_piece == "r":
-                        promoted_piece = Rook(move.piece_moved.color)
-                        break
-                    elif promoted_piece == "b":
-                        promoted_piece = Bishop(move.piece_moved.color)
-                        break
-                    elif promoted_piece == "n":
-                        promoted_piece = Knight(move.piece_moved.color)
-                        break
-                    else:
-                        print("Not a valid piece, please reselect!")
-            else:
-                # All black promotions will just be a Queen
-                # As of now at least
-                promoted_piece = Queen(move.piece_moved.color)
-
+        if move.pawn_promotion: 
+            # For sake of the AI, all promotions are Queen
+            # Else, we would have to tell the AI what we would promte to
+            # when it is not our turn and not able to see board 
+            promoted_piece = Queen(move.piece_moved.color)
             self.board[move.end_row][move.end_col] = promoted_piece
 
         # Check if En Passant
@@ -179,26 +163,56 @@ class GameState:
                     # Get all possible moves that piece found
                     moves = piece.get_moves((x,y), self.board)
                     for move in moves:
-                        legal_moves.append(Move((y,x), move, self.board))
-
+                        legal_moves.append(Move((y,x), (move[1], move[0]), self.board))
         return legal_moves
+
+    def convert_to_3d(self, board):
+        # this is our board represented in a 3d array
+        board3d = np.zeros((14,8,8), dtype=np.int8)
+
+        # all possible piece types
+        pieces = [Pawn, Knight, Bishop, Rook, Queen, King]
+
+        # looking for instance of each piece type on board
+        # will append a one to the 3d array if that piece exists on board
+        i = 0
+        for piece in pieces:
+            for row in range(ROWS):
+                for col in range(COLS):
+                    if type(board[row][col]) == piece and board[row][col].color == "white":
+                        board3d[i][row][col] = 1
+
+            for row in range(ROWS):
+                for col in range(COLS):
+                    if type(board[row][col]) == piece and board[row][col].color == "black":
+                        board3d[i+6][row][col] = 1
+            i += 1
+                    
+        # get all the attacking square for white and black
+        white_moves = self.get_all_possible_moves("white")
+        for move in white_moves:
+            board3d[12][move.end_row][move.end_col] = 1
+
+        black_moves = self.get_all_possible_moves("black")
+        for move in black_moves:
+            board3d[13][move.end_row][move.end_row] = 1
+
+        return board3d
 
     # Write a Min/Max evaluation to turn model into an array we can work with
     def get_board_eval(self):
-        """
         # Turn our board into a board the model can understand
-        # board3d = self.board)
+        board3d = self.convert_to_3d(self.board)
         board3d = np.expand_dims(board3d, 0)
 
         # Return the evaluation from the model
-        return model(board3d)[0][0]
-        """
-        pass
-    
+        eval = model.predict(board3d)
+        return float(eval[0][0])
+
     # Write a Min/Max fuction
     def minimax(self, depth, a, b, max):
         # Hit final depth or game is over
-        if depth == 0 or self.checkmate or self.stalemate:
+        if depth == 0:
             return self.get_board_eval()
 
         # If turn is black 
@@ -215,8 +229,8 @@ class GameState:
                 self.undo_move()
 
                 # Get max eval
-                max_eval = max(max_eval, eval)
-                a = max(a, eval)
+                max_eval = np.maximum(max_eval, eval)
+                a = np.maximum(a, eval)
                 if b <= a:
                     break
             
@@ -237,8 +251,8 @@ class GameState:
                 self.undo_move()
 
                 # Get min eval (or best move for white)
-                min_eval = min(min_eval, eval)
-                b = min(b, eval)
+                min_eval = np.minimum(min_eval, eval)
+                b = np.minimum(b, eval)
                 if b <= a:
                     break
             
@@ -246,12 +260,12 @@ class GameState:
             return min_eval
 
     # Write function to get AI move
-    def ai_move(self, depth = 10):
+    def ai_move(self, depth = 1):
         best_move = None
         max_eval = -np.inf
 
         # Loop through, evaluating each move
-        for move in self.get_all_possible_moves("black"):
+        for move in self.get_all_possible_moves("white"):
             # Make move
             self.make_move(move)
             

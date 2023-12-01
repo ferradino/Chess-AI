@@ -24,31 +24,34 @@ class Main():
 
         # Game Loop (runs until user clocks exit)
         while self.running:
+            pygame.display.update()
+
             # Limits how fast the game loops (60fps)
             self.clock.tick(FPS)
-        
-            # Event handling
-            for event in pygame.event.get():
-                # If user clicked_square exit, exit program
-                if event.type == pygame.QUIT:
-                    self.running = False
-                    pygame.quit()
-                    sys.exit()
 
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    position = ((list(pygame.mouse.get_pos())[0] - BOARD_OFFSET) // SQSIZE,  # (x, y) location of the mouse
-                                (list(pygame.mouse.get_pos())[1] - BOARD_OFFSET) // SQSIZE)
-                    col = position[0] 
-                    row = position[1]
+            # Determine who's turn it is to move
+            color_to_move = "white" if self.game_state.white_to_move else "black"
 
-                    # Check if click was out of bounds
-                    if (row < 0 or row > 7) or (col < 0 or col > 7):
-                        continue
+            if color_to_move == "black":
 
-                    # Determine who's turn it is to move
-                    color_to_move = "white" if self.game_state.white_to_move else "black"
+                # Event handling
+                for event in pygame.event.get():
+                    # If user clicked_square exit, exit program
+                    if event.type == pygame.QUIT:
+                        self.running = False
+                        pygame.quit()
+                        sys.exit()
 
-                    if color_to_move == "white":
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        position = ((list(pygame.mouse.get_pos())[0] - BOARD_OFFSET) // SQSIZE,  # (x, y) location of the mouse
+                                    (list(pygame.mouse.get_pos())[1] - BOARD_OFFSET) // SQSIZE)
+                        col = position[0] 
+                        row = position[1]
+
+                        # Check if click was out of bounds
+                        if (row < 0 or row > 7) or (col < 0 or col > 7):
+                            continue
+
                         # Clicked the same square twice
                         if self.selected_square == (row, col) and len(self.clicked_squares) == 1:
                             self.square_selected = ()
@@ -58,7 +61,6 @@ class Main():
                             # If not the same square, add it to the list
                             self.selected_square = (row, col)
                             self.clicked_squares.append(self.selected_square)
-
 
                         # Make sure first click is a white piece
                         game_object = self.game_state.board[row][col]
@@ -101,13 +103,12 @@ class Main():
                             else:
                                 self.clicked_squares = [self.clicked_squares[0]] # setting list equal to first square in list
                                 
-                    else:
-                        # Generate a move from the AI
-                        ai_move = self.game_state.ai_move()
-                        self.game_state.make_move(ai_move)
+            else:
+                # Generate a move from the AI
+                ai_move = self.game_state.ai_move()
+                self.game_state.make_move(ai_move)
 
-            # Updates the display to reflect changes
-            pygame.display.update()
+                draw_board(self.game_state.board)
 
 if __name__ == "__main__":
     main = Main()
