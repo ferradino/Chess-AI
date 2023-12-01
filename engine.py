@@ -8,7 +8,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import tensorflow as tf
 
 # Our model we trained from the ai
-model = tf.keras.models.load_model('models/model.keras')
+model = tf.keras.models.load_model('models/model2023-11-30 22:19:14.553059.keras')
 
 class GameState:
     def __init__(self):
@@ -229,7 +229,7 @@ class GameState:
                 self.undo_move()
 
                 # Get max eval
-                max_eval = (np.maximum(max_eval, eval))
+                max_eval = np.maximum(max_eval, eval)
                 a = np.maximum(a, eval)
                 if b <= a:
                     break
@@ -267,6 +267,9 @@ class GameState:
         # Loop through, evaluating each move
         for move in self.get_all_possible_moves("white"):
             # Make move
+            self.make_move(move)
+            
+            # Evaluate the move
             eval = self.minimax(depth-1, -np.inf, np.inf, False)
 
             # Undo move
