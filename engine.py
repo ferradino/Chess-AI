@@ -224,12 +224,10 @@ class GameState:
 
                 # Evaluate the move
                 eval = self.minimax(depth-1, a, b, False)
-                print(eval)
 
                 # Undo move
                 self.undo_move()
 
-                print(max_eval)
                 # Get max eval
                 max_eval = (np.maximum(max_eval, eval))
                 a = np.maximum(a, eval)
@@ -269,9 +267,6 @@ class GameState:
         # Loop through, evaluating each move
         for move in self.get_all_possible_moves("white"):
             # Make move
-            self.make_move(move)
-            
-            # Evaluate the move
             eval = self.minimax(depth-1, -np.inf, np.inf, False)
 
             # Undo move
