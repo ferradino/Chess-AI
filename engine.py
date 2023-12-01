@@ -260,7 +260,7 @@ class GameState:
             return min_eval
 
     # Write function to get AI move
-    def ai_move(self, depth = 1):
+    def ai_move(self, depth = 2):
         best_move = None
         max_eval = -np.inf
 
