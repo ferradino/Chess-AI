@@ -10,7 +10,6 @@ import tensorflow as tf
 # Our model we trained from the ai
 model = 'model2023-11-30 22:19:14.553059.keras'     # Change this to use a different model from the models folder
 model = tf.keras.models.load_model(os.path.join('models', model))
-# model = tf.keras.models.load_model('models/model2023-11-30 22:19:14.553059.keras')
 
 class GameState:
     def __init__(self):
