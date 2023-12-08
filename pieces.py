@@ -11,6 +11,44 @@ class ChessPiece:
             pygame.image.load(os.path.join("images", img)), (SQSIZE, SQSIZE)
         )  # Load piece image and scale to size
 
+def is_in_check(self, color, board_changes = None): 
+        output = False
+        kings_position = None
+        next_piece = None
+        block = None
+        new_block = None
+        new_block2 = None
+        if board_changes is not None:
+            for square in self.squares:
+                if square.pos == board_changes[0]:
+                    next_piece = square.occupying_piece
+                    block = square
+                    block.occupying_piece = None
+            for square in self.squares:
+                if square.pos == board_changes[1]:
+                    new_block = square
+                    new_block2 = new_block.occupying_piece
+                    new_block.occupying_piece = next_piece
+        pieces = [
+            i.occupying_piece for i in self.squares if i.occupying_piece is not None
+        ]
+        if next_piece is not None:
+            if next_piece.notation == 'K':
+                kings_position = new_block.pos
+        if kings_position == None:
+            for piece in pieces:
+                if piece.notation == 'K' and piece.color == color:
+                        kings_position = piece.pos
+        for piece in pieces:
+            if piece.color != color:
+                for square in piece.attacking_squares(self):
+                    if square.pos == kings_position:
+                        output = True
+        if board_changes is not None:
+            block.occupying_piece = next_piece
+            new_block.occupying_piece = new_block2
+        return output
+
 def is_in_checkmate(self, color):
         output = False
         for piece in [i.occupying_piece for i in self.squares]:
