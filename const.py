@@ -1,9 +1,9 @@
 # Need width and height for the window
 # As well as the number of squres and their sizes
-WIDTH = 800
+WIDTH = 800 
 HEIGHT = 800
 
-BOARD_OFFSET = 100  # Offset for board to be drawn in middle of screen
+BOARD_OFFSET = 100 # Offset for board to be drawn in middle of screen
 
 COLS = 8
 ROWS = 8
