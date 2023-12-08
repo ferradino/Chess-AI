@@ -68,6 +68,14 @@ class GameState:
         self.board[move.start_row][move.start_col] = None
         self.board[move.end_row][move.end_col] = move.piece_moved
 
+        # Check if Pawn Promotion
+        if move.pawn_promotion:
+            # For sake of the AI, all promotions are Queen
+            # Else, we would have to tell the AI what we would promte to
+            # when it is not our turn and not able to see board
+            promoted_piece = Queen(move.piece_moved.color)
+            self.board[move.end_row][move.end_col] = promoted_piece
+
         # En passant logic
         if isinstance(move.piece_moved, Pawn) and move.is_enpassant:
             direction = -1 if move.piece_moved.color == "white" else 1

@@ -127,11 +127,6 @@ class Main:
                                     self.clicked_squares[0]
                                 ]  # setting list equal to first square in list
 
-                            if self.move_made == True:
-                                if self.color_to_move == "white":
-                                    self.color_to_move = "black"
-                                else:
-                                    self.color_to_move = "white"
             else:
                 # Generate a move from the AI
                 ai_move = self.game_state.ai_move()
